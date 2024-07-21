@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Welcome to my cat gallery</h1>
+  <div class="gallery">
+    <div class="item">
+      <img onclick="showModal(this)" class="thumbnail" src="https://mimo.app/i/whispurr.png" alt="Whispurr">
+      <h2>Whispurr</h2>
+    </div>
+    <div class="item">
+        <img onclick="showModal(this)" class="thumbnail" src="https://mimo.app/i/babaganoosh.png" alt="Babaganoosh">
+        <h2>Babaganoosh</h2>
+      </div>
+      <div class="item">
+        <img onclick="showModal(this)" class="thumbnail" src="https://mimo.app/i/nacho.png" alt="Nacho">
+        <h2>Nacho</h2>
+      </div>
+  </div>
+  <div id="modal">
+    <span onclick="hideModal()" id="modal-close-button">×</span>
+    <img src="" alt="" id="modal-content">
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
