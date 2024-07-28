@@ -5,9 +5,9 @@
 
 ## Content
 
-# CSS Cheat Sheet
-# JS Cheat Sheet
-# SQL Cheat Sheet
+- [CSS Cheat Sheet](docs/#CSS-Cheat-Sheet)
+- [JS Cheat Sheet](docs/#JS-Cheat-Sheet)
+- [SQL Cheat Sheet](docs/#SQL-Cheat-Sheet)
 
 ## CSS Cheat Sheet
 
