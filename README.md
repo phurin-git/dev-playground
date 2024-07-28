@@ -6,7 +6,22 @@
 ## Content
 
 - [CSS Cheat Sheet](README.md/#CSS-Cheat-Sheet)
+  - [CSS Selectors](README.md/#CSS-Cheat-Sheet)
+  - [Box Model](README.md/#CSS-Cheat-Sheet)
+  - [Text and Font](README.md/#CSS-Cheat-Sheet)
+  - [Background](README.md/#CSS-Cheat-Sheet)
+  - [Display and Positioning](README.md/#Display-and-Positioning)
+  - [Flexbox](README.md/#Flexbox)
+  - [Grid](README.md/#Grid)
+  - [Animation and Transitions](README.md/#Animation-and-Transitions)
+  - [Miscellaneous](README.md/#Miscellaneous)
 - [JS Cheat Sheet](README.md/#JS-Cheat-Sheet)
+  - [Array Methods](README.md/#Array-Methods)
+  - [ES6 (Destructuring)](README.md/#ES6-(Destructuring))
+  - [DOM & Events](README.md/#DOM-&-Events)
+  - [Semantics & Accessibility](README.md/#Semantics-&-Accessibility)
+  - [Synchrony & Asynchrony](README.md/#Synchrony-&-Asynchrony)
+  - [Classes](README.md/#Classes)
 - [SQL Cheat Sheet](README.md/#SQL-Cheat-Sheet)
 
 ## CSS Cheat Sheet
