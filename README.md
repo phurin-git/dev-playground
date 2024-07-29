@@ -34,7 +34,7 @@
   - [Conditional Rendering](README.md/#Conditional-Rendering)
   - [Ternary Operators and &&](README.md/#Ternary-Operators-and-&&)
   - [Lists and Maps](README.md/#Lists-and-Maps)
-- [Python Cheat Sheet](/Python-Developer.ipynb)
+- [Python Cheat Sheet](Python Developer.ipynb)
 
 ## CSS Cheat Sheet
 
