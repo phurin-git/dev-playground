@@ -6,7 +6,7 @@
 ## Content
 
 - [CSS Cheat Sheet](README.md/#CSS-Cheat-Sheet)
-  - [CSS Selectors](README.md/#CSS-Cheat-Sheet)
+  - [Selectors](README.md/#Selectors)
   - [Box Model](README.md/#CSS-Cheat-Sheet)
   - [Text and Font](README.md/#CSS-Cheat-Sheet)
   - [Background](README.md/#CSS-Cheat-Sheet)
@@ -34,10 +34,11 @@
   - [Conditional Rendering](README.md/#Conditional-Rendering)
   - [Ternary Operators and &&](README.md/#Ternary-Operators-and-&&)
   - [Lists and Maps](README.md/#Lists-and-Maps)
+- [Python Cheat Sheet](Python-Developer.ipynb)
 
 ## CSS Cheat Sheet
 
-### CSS Selectors
+### Selectors
 
 - `*`: Universal selector
 - `element`: Type selector (e.g., `p`, `h1`)
