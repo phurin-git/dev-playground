@@ -1017,3 +1017,261 @@ ReactDOM.render(
  document.getElementById("root")
 )
 ```
+
+## Node.js Cheat Sheet
+
+### Intro to Node.js
+
+Node.js is an open-source runtime environment that enables developers to create full-stack applications using only JavaScript.
+
+Full-stack applications involve the code that runs in the browser and also the code that runs on the server.
+
+Everything we've done until now focuses on code that runs in the browser, which is called the frontend or client-side.
+
+The frontend receives code sent from a server connected to the internet. We call that the backend or server-side.
+
+For now, we'll only concentrate on utilizing Node.js to support frontend development.
+
+Node.js enables developers to import libraries and other modules into a project without using a separate `script` tag in the HTML.
+
+JavaScript has numerous libraries that assist in the development of applications.
+
+These libraries are typically organized and distributed in packages. We can handle these packages with a package manager.
+
+```bash
+npm install moment
+```
+
+To create a project using Node we must initialize the project.
+
+A project can be created using the command `npm init` in the terminal.
+
+```bash
+npm init react-app <app name>
+```
+
+To install packages, type `npm install` or `npm i` followed by the package name.
+
+Installing a package updates the package.json file, which displays a list of all installed packages in the project.
+
+```json
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.2",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  }
+}
+
+```
+### Client vs Servers
+
+**Introduction**
+Most complex websites use server-side programming to create dynamic content.
+
+This means writing code that runs on another computer functioning as a server, using a database to store and retrieve information.
+
+Login pages like the one below are almost always created with the help of server-side code.
+
+HTTP stands for **HyperText Transfer Protocol**. It's how the browser communicates with the server when you click on a URL link.
+
+The browser makes a **request** to the server, and the server sends back a **response**. This is how browser and server communication works.
+
+```bash
+              Request
+┌─────────┐               ┌─────────┐
+│ Browser │ ────────────► │ Server  │
+└─────────┘               └─────────┘
+              Response
+┌─────────┐               ┌─────────┐
+│ Browser │ ◄──────────── │ Server  │
+└─────────┘               └─────────┘
+```
+
+**Frontend and Backend Tasks**
+
+Code running the browser is called client-side, or frontend. It also handles interactivity on a page, like hiding or showing an element. Client-side code is written in HTML, CSS, and Javascript.
+
+Server-side code handles the specifics of what content is sent to the browser.
+
+```javascript
+const express = require("express")
+const bodyParser = require("body-parser")
+const db = require('./queries')
+const app = express()
+
+app.use(
+    bodyParser.urlencoded({
+        extended: true
+    })
+)
+
+app.get('/robot', db.getRobots)
+app.get('/robot/:id', db.getRobotsId)
+app.post('/robot', db.createRobot)
+app.listen(3000)
+```
+
+JavaScript is one of the languages that we can use to write both frontend and backend code.
+
+**Static and Dynamic**
+
+Websites that always show the same data are **static websites**. These don't use a server to display dynamically generated content.
+
+```html
+<!DOCTYPE html>
+<body>
+    <h2>About us</h2>
+    <p>We're a family business specializing in giving you the most authentic neapolitan pizza experience!</p>
+</body>
+```
+
+Dynamic websites generate some of their content dynamically, by requesting data from the server and displaying the response. Clients request the content stored in servers' databases. Then, clients update the HTML they display, filling in the new content.
+
+So we don't need to write individual HTML files for each piece of information
+
+Using a database and server-side code means we only need to create one HTML template that we can use for every item in the catalog.
+
+Dynamic websites can return **different content** for a request based on information in the URL or other information stored in the browser.
+
+```url
+https://catalog.com/api/products?results=10 // dispaly 10 result
+```
+
+### Communicating with an API
+
+**What is an API?**
+
+Application programming interfaces, also known as `API`, facilitate communication between two programs.
+
+`APIs` send requests from a sender program to a receiver program. Then, they send responses from the receiver to the sender program.
+
+Many things in our daily life work like an `API`. One example is a waiter and the kitchen staff.
+
+A waiter, like a sender program, sends an order to the kitchen. Then the kitchen, as a receiver program, sends back the food as a response.
+
+**Why use an API?**
+
+Back-end developers don't need to wait for front-end development to be completed to test their program.
+
+They can test their program by simply sending requests to the `API` and checking if the responses are correct.
+
+
+**fetch and API tools**
+
+We can send requests to `APIs` using `fetch()` in JavaScript.
+
+```javascript
+fetch(url, method: <'GET', 'PUT', 'PATCH', 'DELETE'>, body: <'body'>).then(callback)
+```
+
+### HTTP Requests
+
+**Request Line and parameters**
+
+A request is made of different parts, each with a specific role. The **URL** specifies the **location** of the server and the content or **resource**. The **method** of a browser request defines the type of action it should perform. There are a few different methods that browsers can send.
+
+```bash
+ GET     https://abc.com    /movies
+|___|   |_______________|  |_______|
+method   backend location   resource
+
+```
+
+URLs can have **parameters**, like `1010` here that stands for a user's ID.
+
+```bash
+format: https://abc.com/users/:id
+
+    GET https://abc.com/users/1010 HTTP/1.1
+```
+
+**Query parameters**
+
+The request line URL can also have **query parameters**. These are key-value pairs that appear after a `?` sign.
+
+```bash
+GET https://abc.com/users?membership=regular HTTP/1.1
+```
+
+URLs can have several query parameters chained through `&`. Here, we're requesting premium users with an active streak.
+
+```bash
+GET https://abc.com/users?membership=regular&isactive=true HTTP/1.1
+```
+
+Through their labeled nature, query parameters like `id=1010` make the URL more understandable.
+
+```bash
+using query parameters:
+GET https://abc.com/users?id=1010 HTTP/1.1
+
+using simple parameters:
+GET https://abc.com/users/1010 HTTP/1.1
+```
+
+**Request body**
+
+Under the request line, a browser request has a series of headers
+
+```bash
+GET https://abc.com/movies HTTP/1.1
+Host: abc.com
+User-Agent: Mozilla/5.0 
+Accept: text/html,image/jpeg
+Accept-Language: en-us,en
+Accept-Encoding: gzip,deflate
+Accept-Charset: ISO-8859-1,utf-8
+Keep-Alive: 300
+Connection: keep-alive
+Cookie: PHPSESSID=r2t5uvjq435r4
+Cache-Control: no-cache
+```
+
+### HTTP Request Responses
+
+**Status line**
+
+The status line contains the protocol `HTTP/1.1` followed by the status code `200 OK`. For more information click – [Here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
+
+```bash
+HTTP/1.1 200 OK
+Date: Mon, 27 Jul 2009 12:28:53 GMT
+Server: Apache/2.2.14 (Win32)
+Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT
+Content-Length: 88
+Content-Type: application/json
+Connection: Closed
+
+{
+ "item": "jeans",
+ "price": 89
+}
+```
+
+**Response Body**
+
+n case of a successful request, the client will get a `200 OK` response code, along with a **response body** containing the data. One common format for an HTTP response body is JSON, which stands for Javascript Object Notation. The JSON syntax is similar to that of a JavaScript object.
+
+```bash
+HTTP/1.1 200 OK
+Date: Mon, 27 Jul 2009 12:28:53 GMT
+Server: Apache/2.2.14 (Win32)
+Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT
+Content-Length: 88
+Content-Type: application/json
+Connection: Closed
+
+{
+  "username": "phurin",
+  "name": "Phurin Nararat"
+}
+```
