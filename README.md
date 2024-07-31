@@ -35,6 +35,25 @@
   - [Ternary Operators and &&](README.md/#Ternary-Operators-and-&&)
   - [Lists and Maps](README.md/#Lists-and-Maps)
 - [Python Cheat Sheet](/Python%20Developer.ipynb)
+- [Node.js Cheat Sheet](README.md/#Node.js-Cheat-Sheet)
+  - [Intro to Node.js](README.md/#Intro-to-Node.js)
+  - [Client vs Servers](README.md/#Client-vs-Servers)
+  - [Communicating with an API](README.md/#Communicating-with-an-API)
+  - [HTTP Requests](README.md/#HTTP-Requests)
+  - [HTTP Request Responses](README.md/#HTTP-Request-Responses)
+- [Express.js Cheat Sheet](README.md/#Express.js-Cheat-Sheet)
+  - [Introduction-to-ExpressJS](README.md/#Introduction-to-ExpressJS)
+  - [Request and Response Objects](README.md/#Request-and-Response-Objects)
+  - [ExpressJS Route Parameters](README.md/#ExpressJS-Route-Parameters)
+  - [Middleware in Express](README.md/#Middleware-in-Express)
+  - [Express Router](README.md/#Express-Router)
+  - [Express Error Handling](README.md/#Express-Error-Handling)
+  - [Structuring GET Endpoints](README.md/#Structuring-GET-Endpoints)
+  - [Structuring POST Endpoints](README.md/#Structuring-POST-Endpoints)
+  - [Structuring DELETE Endpoints](README.md/#Structuring-DELETE-Endpoints)
+  - [Structuring PUT Endpoints](README.md/#Structuring-PUT-Endpoints)
+  - [Connecting to a Database](README.md/#Connecting-to-a-Database)
+  - [Database Interactions](README.md/#Database-Interactions)
 
 ## CSS Cheat Sheet
 
@@ -1274,4 +1293,979 @@ Connection: Closed
   "username": "phurin",
   "name": "Phurin Nararat"
 }
+```
+
+
+## Express.js Cheat Sheet
+
+### Introduction to ExpressJS
+
+We know the basics about how the frontend and backend communicate. Now we can start building our web server with Express.
+
+Remember, a web server is responsible for storing, managing, and serving files to web browsers when they're requested.
+
+Express is a popular web framework for Node.js that simplifies the setup, installation, and management of web servers.
+
+It's also a minimalist package, meaning it doesn't require other libraries or plugins to function.
+
+Recall that Node.js is an open-source runtime environment that enables developers to create full-stack applications using only JavaScript.
+
+Full-stack applications handle both the frontend and backend components of a web application.
+
+To install Express in our project, we use the `npm install express` command.
+
+To use Express, we require it in our code using Node's built-in require() function.
+
+We typically assign the output of require() to a variable with the same name as the package we're using.
+
+The `listen()` function takes two parameters. The first parameter specifies the **port number**.
+
+The second parameter is a **callback function** that executes when the server starts.
+
+The port number is a distinctive identifier that tells the server which application should process an incoming request.
+
+Ports allow multiple applications to connect to a server simultaneously with different HTTP requests.
+
+```javascript
+const express = require('express')
+const app = express()
+const port = 8000
+
+app.listen(port, callback)
+```
+
+### Request and Response Objects
+
+**The Request Object**
+
+Express' `get()` method defines a specific route that matches incoming HTTP GET requests to a specified path and triggers a callback function.
+
+```javascript
+const express = require("express")
+const app = express()
+const port = 3000
+
+app.get("/", () => {})
+
+app.listen(port, () => {
+  console.log(`The server is listening on port ${port}`)
+})
+```
+
+The callback function accepts two arguments: a request object and a response object. These are often written as `req` and `res`.
+
+All endpoints require a path and utilize the `req` and `res` objects as parameters in their callback function.
+
+```javascript
+app.get("/", (req, res) => {console.log(req)})
+```
+
+The `req` object has properties with useful information that can be used to help manage and respond to requests.
+
+The `req.method` property for example contains information on the type of HTTP request that was sent. (GET, POST, PUT, PATCH, DELETE)
+
+The `req.hostname` identifies the device or server making the request. This can be useful in deciding if a request is approved or denied.
+
+Parameter values can be useful in a wide variety of situations by allowing the response to be more dynamic based on the request.
+
+```javascript
+app.get("/flag/:country", (req, res) => {
+  console.log(`New request made: ${req.method}`)
+  console.log(`Country parameter: ${req.params.country}`)
+ // use the parameter to retrieve specific flag data
+})
+```
+
+**The Response Object**
+
+The requesting client needs to know the final status of its request. We use the `status()` method to set the HTTP status code.
+
+```javascript
+app.get("/about", (req, res) => {
+  console.log(`New request made: ${req.method}`)
+  res.status(200).send("<p>Successful Request</p>")
+})
+```
+
+`redirect()` can redirect the browser to a page's new URL. It's also used when a page's content has been moved to a new location on the page.
+
+```javascript
+app.get("/user", (req, res) => {
+  console.log(`New request made: ${req.method}`)
+  res.redirect("/userinfo")
+  res.send("<h1>User Info Page</h1>")
+})
+```
+
+### ExpressJS Route Parameters
+
+In Express we use routes to handle incoming requests. A route is a specified URL path and HTTP method.
+
+When a request is mapped to a route, the route processes the request and a response is sent.
+
+In Express the route's path can be a string, a string pattern, or even a regular expression!
+
+Routes can point to directories. For example the `/` path directs users to the root directory, `/movies` path directs to movies directory.
+
+```javascript
+const express = require('express')
+const app = express()
+
+//path with a string
+app.get('/movies', (req, res) => {
+  res.send('Hello from the root directory!')
+})
+
+//path with a string pattern
+app.get('/movies/:id', (req, res) => {
+  res.send('Hello from the movies directory!')
+})
+
+app.listen(3000, () => console.log('The server is listening on port 3000'))
+```
+
+If we want to access a movie with the id `35`? We can add a specific GET route with the path `/movies/35`.
+
+```javascript
+app.get('/movies/35', (req, res) => {
+  res.send('Hello. I am the movie with the id 35 in the movies directory!')
+})
+```
+
+But what if we have a lot of movies? That's where Express dynamic path parameters come in.
+
+We `add /:` and the parameter name to the path. Like here with `id`.
+
+```javascript
+app.get('/movies/:id', (req, res) => {
+  res.send('Hello there. I am a route with a parameter called id!')
+})
+```
+
+if we want the value of the movie's `id`, we code `req.params.id`
+
+```javascript
+app.get('/movies/:id', (req, res) => {
+  res.send(`Hello. I am the movie with the id ${req.params.id} in the movies directory!`
+  )
+})
+```
+
+We can add more than one parameter to a route's path, like a `name` parameter for the `movies` directory.
+
+Here a request with path `/movies/35/Aliens` gives the value `35` to the `id` parameter and `Aliens` to the `name` parameter.
+
+```javascript
+app.get('/movies/:id/:name', (req, res) => {
+  res.send(`Hello. I am the movie with the id ${req.params.id} and the name ${req.params.name} in the movies directory!`)
+})
+```
+
+We can also use destructuring to access parameter values from the `req.params` object and save them in variables.
+
+Let's destructure the parameters with the syntax `const { id, name } = req.params`
+
+```javascript
+app.get('/movies/:id/:name', (req, res) => {
+  const {id, name} = req.params
+  res.send(`Hello. I am the movie with the id ${id} and the name ${name} in the movies directory!`)
+})
+```
+
+### Middleware in Express
+
+**Middleware** refers to functions that act as an intermediary layer between the web server and the application.
+
+This intermediary layer allows for more efficient interaction between the server and the app.
+
+Middleware functions can access the request and response in an application's request-response cycle.
+
+You can use middleware for tasks like logging information, parsing requests, authentication, and more.
+
+In Express we add middleware with the `.use()` method.
+
+```javascript
+app.use((req, res) => { 
+  console.log('Incoming request...') 
+  console.log(`Request type: ${req.method}`) 
+}) 
+```
+
+Express has built-in middleware functions, such as `express.json()`.
+
+`express.json()` parses incoming requests that contain JSON payloads, converting them to a JS object that the server can readily process.
+
+```javascript
+const express = require("express") 
+const app = express() 
+
+app.use(express.json())
+
+app.get('/', (req, res) => { 
+  console.log('The request body JSON is converted to a JS object.') 
+}) 
+
+app.listen(3000, () => { 
+  console.log('The server is listening on port 3000') 
+})
+```
+
+We can also create our own custom middleware, that does specific custom actions we've defined such as `authenticate`.
+
+```javascript
+function authenticate(req, res) { 
+  if (req.body.role === 'Admin') { 
+    console.log('Authenticated') 
+  } else { 
+    console.log('Unauthorized') 
+  } 
+} 
+ 
+app.use(authenticate) 
+```
+
+Third-party middleware can also be used. Morgan is a popular middleware used to log HTTP request details.
+
+```javascript
+const express = require('express') 
+const morgan = require('morgan') 
+const app = express() 
+ 
+// 'tiny' provides logging with minimal output 
+app.use(morgan('tiny')) 
+ 
+app.get('/', (req, res) => { 
+  res.status(500).send('Request received.') 
+}) 
+
+app.listen(3000, () => { 
+    console.log('The server is listening on port 3000') 
+})
+```
+
+**Output :**
+
+```bash
+The server is listening on port 3000
+GET / 200 150 - 1.650 ms
+```
+
+An important thing to remember is that if we apply `.use()` in our code, none of the code after the middleware function will run. In this code GET request is not handled.
+
+```javascript
+app.use
+((req, res) => { 
+  console.log('Incoming request...') 
+  console.log('Request type: ' + req.method) 
+  console.log('The flow will stop here.') 
+}) 
+ 
+app.get('/', (req, res) => { 
+   console.log("Did we make it to the `get()` middleware step?") 
+})
+```
+
+To move on to the next middleware, we use `next()`. We first need to add `next` to the parameters of the middleware.
+
+Then, we call `next()` at the end of the middleware function.
+
+```javascript
+app.use((req, res, next) => { 
+  console.log('Incoming request...') 
+  console.log(`Requesting server: ${req.hostname}`) 
+  next() 
+}) 
+```
+
+### Express Router
+
+**Express Router Basics**
+
+We know that middleware can be bound to all requests that an Express app receives.
+
+But how can we assign specific middleware to particular routes? That’s where Express Router comes in!
+
+Express Router is a module that allows us to bind middleware at the *route* level.
+
+Express Router does this by using a router object that links an HTTP method and path to specific middleware.
+
+We'll start with an instance of an Express app in `index.js`. We've also created JS files for each route.
+
+Creating route files is not mandatory but it helps modularize our code. In each route file, we must `require()` Express.
+
+We need to create an instance of the router object in each of the route files.
+
+In users.js, declare a variable and assign it an instance of the router object by coding `express.Router()`.
+
+**users.js :**
+
+```javascript
+const express = require('express')
+const router =  express.Router()
+```
+
+Now, let's use the router object to create a GET endpoint in `./users.js`.  Use the syntax `router.get()`.
+
+Note that because we'll mount this module to the path `/users` in `index.js`, the path here can simply be `/`.
+
+**users.js :**
+
+```javascript
+const express = require('express')
+const router =  express.Router()
+
+router.get('/', (req, res) => {
+  res.send('Get a list of all users')
+})
+```
+
+To make the route available for use in the application, you'll need to export the modules.
+
+To do this code `module.exports = router` at the end of the `users.js` file.
+
+```javascript
+const express = require('express')
+const router =  express.Router()
+
+router.get('/', (req, res) => {
+  res.send('Get a list of all users')
+})
+
+module.exports = router
+```
+
+import them to the main file `index.js` and bind the modules to their respective routes in our Express application with app.use().
+
+**index.js :**
+
+```javascript
+const express = require('express')
+const usersRouter = require('./users.js')
+const app = express()
+
+app.use('/users', usersRouter)
+
+app.listen(4000, () => {
+  console.log('The server is listening on port 4000')
+})
+```
+
+**The Router Object**
+
+The `router.use()` mounts middleware functions to a specific path. When an incoming request's path matches the specified path, the middleware executes.
+
+We can then mount router on the /products path in app.use(). This allows us to modularize routes.
+
+Any incoming requests to /products/clothing will be handled by the middleware function defined in the router.use() method.
+
+```javascript
+const express = require('express')
+const app = express()
+const router = express.Router()
+
+router.use('/clothing', (req, res, nex) => {
+  console.log('Router use for /clothing)
+})
+
+app.use('/products', router)
+
+app.listen(4000, () => {
+  console.log('The server is listening on port 4000')
+})
+```
+
+The `next()` function at the route level serves the same purpose as `next()` at the app level. `next()` calls the next middleware function that matches the request path. We must include next in the callback function's parameters.
+
+```javascript
+const express = require('express')
+const app = express()
+const router = express.Router()
+
+router.use('/clothing', (req, res, nex) => {
+  console.log('Router use for /clothing)
+})
+
+router.get('/clothing', (req, res) => {
+  res.send('Router is getting all clothing info')
+})
+
+app.use('/products', router)
+
+app.listen(4000, () => {
+  console.log('The server is listening on port 4000')
+})
+```
+
+The `router.param()` method binds middleware to a specified parameter. Its final argument is the value of the parameter. Here, when a user accesses a path with the parameter `clothingId` we'll see a console log with the parameter's value.
+
+```javascript
+const express = require('express')
+const app = express()
+const router = express.Router()
+
+router.param('clothingID', (req, res, next, clothingId) => {
+  if(clothingId) {
+    console.log(`This is a request for the Clothing ID: ${clothingId}`)
+  }
+  next()
+})
+
+router.get('/clothing/:clothingId', (req, res) => {
+  res.send('Router is getting the request info')
+})
+
+app.use('/products', router)
+
+app.listen(4000, () => {
+  console.log('The server is listening on port 4000')
+})
+```
+
+`router.route()` allows us to handle all HTTP methods for a single route with one function. Here `router.route()` binds `validateAuth` middleware to handle all HTTP methods for `/users/:userId`, and has distinct callbacks for each method.
+
+```javascript
+const express = require('express')
+const app = express()
+const router = express.Router()
+
+const validateAuth = (req, res, next) => {
+  if(req.params.userId) {
+    console.log('User Identified')
+  }
+  next()
+}
+
+router.route('/user/:userId')
+.all(validateAuth)
+.get((req, res) => res.send.('Getting the user information'))
+.post((req, res) => res.send('Posting the user information'))
+.put((req, res) => res.send('Updating the user information'))
+.delete((req, res) => res.send('Deleting the user information'))
+
+app.use('/main', router)
+
+app.listen(4000, () => {
+  console.log('The server is listening on port 4000')
+})
+```
+
+### Express Error Handling
+
+Error handling allows us to provide useful feedback to the frontend and helps avoid server crashes. If the frontend sends a request with errors, the server may not be able to fulfill the request. Send the `GET` request the response when we request a user that does not exist will be 404.
+
+```javascript
+const express = require('express')
+const app = express()
+
+const products = [
+  {category: 'electronics', price: 400, title:'phone', id: 1},
+  {category: 'electronics', price: 900, title:'phone', id: 2},
+  {category: 'electronics', price: 200, title:'phone', id: 3},
+]
+```
+### Structuring GET Endpoints
+
+GET endpoints in Express allow us to send data requested from our server, making it available to manipulate and display on the frontend. In addition to sending data, endpoints enable us to transmit essential information such as HTTP status codes.
+
+For our examples we'll start by using an array of mock data, so we can focus on structuring our endpoints. For `GET` requests, we'll primarily be retrieving data from the array and sending it back to the client.
+
+`.get()` has two arguments. The first argument is the path that the incoming request is matched to. The path must start with a `/`. The second argument is a callback function with arguments for the request and response objects: `req` and `res`.
+
+In the callback function, we use the response object res to set the status code, and then we `.send()` the requested information.
+
+Remember to **access the request parameters** if applicable, **query the requested information**, and **send a response** with a status code and body.
+
+```javascript
+const express = require('express')
+const app = express()
+
+const products = [
+  {category: 'electronics', price: 400, title:'phone', id: 1},
+  {category: 'electronics', price: 900, title:'phone', id: 2},
+  {category: 'electronics', price: 200, title:'phone', id: 3},
+]
+
+app.get('/products/:id', (req, res) => {
+  const params = req.params
+  const requestedProduct = products.find(product => product.id === Number(params.id))
+  if(!requestedProduct){
+    res.status(404).send({ message: `The product with the id ${ params.id } does not exist`})
+  } else {
+    res.status(200).send(requestedProduct)
+  }
+})
+
+app.listen(3000, () => {
+  console.log('The server is listening on port 3000')
+})
+```
+
+get from sql example
+
+```javascript
+app.get('/products/:id', (req, res) => {
+  const productID = req.params.id
+  connection.query('SELECT * FROM Product WHERE id = ?', productID, (error, results) => {
+    if(error) {
+      res.status.(500).json(error)
+    }
+    res.status(200).send(results)
+  })
+```
+
+### Structuring POST Endpoints
+
+`POST` endpoints in Express allow our server to receive data from the frontend and store it in a database for future retrieval and use.
+
+Like `GET, POST` endpoints start with the instance of the Express application, followed by `.post()`. Like `.get()`, `.post()` has two arguments: the endpoint path and a callback function. The callback has arguments for the `req` and `res` objects.
+
+In the callback function, we first need to process the data in the req object. The req object holds data about the request. The information we'll need is in the `req` object's body. 
+
+After accessing the data, we need to add it to the database. Since we're using an array for our database we'll use `.push()` to add the new data.
+
+Next, we need to send a response to the frontend. We'll use a `201` HTTP status code to signify that the data was saved. However, doing this alone is not a complete solution, and can lead to problems if the data wasn't saved properly.
+
+After we create new data in a database, it's generally best practice to query the data and return it to the client for verification. Here, we'll use the `.find()` method to locate the entry matching our `newProduct` and save the result in a variable.
+
+Finally, let's use a conditional to verify the entry was added and then send an appropriate response: the confirmed data or an error.
+
+Remember to **get the data** from the request body, **add it** to the database, **confirm** that it was added, and **send** a response to the frontend.
+
+```javascript
+const express = require('express')
+const app = express()
+
+const products = [
+  {category: 'electronics', price: 400, title:'phone', id: 1},
+  {category: 'electronics', price: 900, title:'phone', id: 2},
+  {category: 'electronics', price: 200, title:'phone', id: 3},
+]
+
+app.post('/products', (req, res) => {
+  console.log('Calling /products endpoint')
+  const newProduct = req.body
+  products.push(newProduct)
+  const confirmEntry = products.find(product => product === newProduct)
+  if (confirmedEntry) {
+    res.status(201).send(confirmedEntry)
+  } else {
+    res.status(400).send('Error Creating Product')
+  }
+})
+
+app.listen(3000, () => {
+  console.log('The server is listening on port 3000')
+})
+```
+
+post to sql example
+
+```javascript
+app.post('/products', (req, res) => {
+  console.log('Calling /products endpoint')
+  const formData = req.body
+  connect.query('INSERT INTO Product set ?', formData, (error, results) => {
+    if (error) {
+      res.status(500).json(error)
+    }
+    const newProductId = results.insertId
+    connection.query('SELECT * FROM Product WHERE id = ?', newProductId, (error, results) => {
+      id (error) {
+        res.status(500).json(error)
+      }
+      const newProduct = results[0]
+      res.status(201).send(newProduct)
+    })
+  })
+})
+```
+
+### Structuring DELETE Endpoints
+
+For a `DELETE` endpoint, our callback function should remove an entry from the database. Below, we update products to only include entries **not** matching the id passed via request parameters.
+
+Then, our DELETE endpoint sends back a copy of the now updated database along with a status code. We also made our endpoint responses robust: if removing an entry fails, the endpoint sends an appropriate status code and response body.
+
+```javascript
+const express = require('express')
+const app = express()
+
+const products = [
+  {category: 'electronics', price: 400, title:'phone', id: 1},
+  {category: 'electronics', price: 900, title:'phone', id: 2},
+  {category: 'electronics', price: 200, title:'phone', id: 3},
+]
+
+app.delete('/products:id', (req, res) => {
+  const id = request.params.id
+  try {
+    products = products.filter(product => product.id !== Number(id))
+    response.status(200).send(products)
+  } catch (e) {
+    response.status(404).send({ message: `the product with the id ${params.id} does not exist`})
+  }
+})
+
+app.listen(3000, () => {
+  console.log('The server is listening on port 3000')
+})
+```
+
+delete from sql example
+
+```javascript
+router.delete('/products/:id', (request, response) => {
+	const productId = request.params.id
+	connection.query('DELETE FROM Product WHERE id = ?', productId, (error, results) => {
+		if (error)
+			response.status(500).json(error)
+		connection.query('SELECT * FROM Product', productId, (error, results) => {
+			if (error)
+				res.status(500).json(error)
+			const updatedDB = results
+			response.status(200).json(updatedDB)
+		})
+	})
+})
+```
+
+### Structuring PUT Endpoints
+
+`PUT` endpoints either update an existing entry or insert a new entry if one doesn't exist, so they need to be able to handle both cases.
+
+First, inside the callback function, we need to search for a product with a matching `id`. If we find a product with a matching `id`, our PUT endpoint should update the existing entry. Since our database is an array, we can update the existing entry via its index using bracket syntax.
+
+If we don't find a product with that id, our PUT endpoint should insert a new entry. We'll call `.push()` to add the request body data to the database.
+
+After either updating or inserting an entry, our endpoint should access and save the new data to a variable.
+
+Finally, our endpoint should send a response containing the new entry (the one we saved to a variable) along with a status code.
+
+```javascript
+const express = require('express')
+const app = express()
+
+const products = [
+  {category: 'electronics', price: 400, title:'phone', id: 1},
+  {category: 'electronics', price: 900, title:'phone', id: 2},
+  {category: 'electronics', price: 200, title:'phone', id: 3},
+]
+
+app.put('/products:id', (req, res) => {
+  const params = request.params
+  const body = request.body
+  let index = products.findIndex((product) => product.id === Number(params.id))
+
+  if (index >= 0) {
+    products[index] = body
+    let confirmedEntry = products[index]
+    response.status(200).send(confirmedEntry)
+  } else {
+    try {
+      products.push(body)
+      let confirmedEntry = products[products.length - 1]
+      response.status(200).send(confirmedEntry)
+    } catch(e) {
+      response.status(404).send({ message: `update failed`})
+    }
+  }
+})
+
+app.listen(3000, () => {
+  console.log('The server is listening on port 3000')
+})
+```
+
+put to sql example
+
+```javascript
+app.put('/products/:id', (request,
+	response) => {
+	const productId = request.params.id
+	const formData = request.body
+	connection.query('UPDATE Product SET ? WHERE id = ?',[formData, productId], (error, results) => {
+		if (error)
+			res.status(500).json(error)
+		connection.query('SELECT * FROM Product WHERE id = ?',productId, (error, results) => {
+		  if (error)
+			  res.status(500).json(error)
+		  const updatedProduct = results
+			response.status(200).json(updatedProduct)
+			})
+	})
+})
+```
+
+### Connecting to a Database
+
+**How to connect to Database**
+
+To connect to a database, we need to import the `mysql` module. The mysql module has functions to help with connecting to a database. One such function is `createConnection()`. We use `createConnection()` to define the connection details like the server, the credentials, and the database name.
+
+```javascript
+const mysql = require('mysql)
+const connection = mysql.createConnection()
+```
+
+To connect to a database, the program needs to know where the database is. The host property of the object defines this information. 
+
+Connecting to a database usually requires credentials. Aside from the host, we should also include the user and password properties.
+
+Multiple databases can share the same host. We can include the database property in the object to define which database to connect to.
+
+```javascript
+const mysql = require('mysql)
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'myUser',
+  password: 'myPassword',
+  database: 'myDB
+})
+```
+
+**Test connection with Database**
+
+`createConnection()` only holds the details for the database connection. To connect to the database, we need to use the `connect()` function.
+`connection.connect()`
+
+The `connect()` function initiates a connection to the server but will **not** show if the connection was successful. To check the connection, we can add an arrow function as the parameter of `connect()`. The function should take an argument, `error`.
+`connection.connect(error => {})`
+
+The function alone is not enough to let us know if there is an error. We need to use an if statement to check if `error` has a value. If `error` has a value, we should `throw` the `error`. Otherwise, we can print a message in the console that says `'Connected!'`.
+```javascript
+connection.ceonnect(error => {
+  if(error) {
+    throw error
+  }
+  console.log("Connected!")
+}
+```
+
+It's good practice to always end your connection. This ensures that all queries are executed before the database connection is closed. The `mysql` module has an `end()` function that we can use to end the connection.
+`connection.end()`
+
+When we try to close a database connection, we might encounter errors. Therefore, like with `connect()`, we'll also need to pass a callback function that checks for errors as an argument for `end()`.
+
+```javascript
+connection.end(error => {
+  if(error) {
+    throw error
+  }
+  console.log("Connection closed!")
+})
+```
+
+**Environment Variables**
+
+When establishing a connection, the details like host or password are the same throughout all the web pages. *Environment* variables help us save time when coding because we only need to include these details in one file.
+
+Environment variables are like any other variables, the only difference is that they are usable on a global scope, across multiple files. To use environment variables, we need the dotenv module and its `config()` function.
+`require.('dotenv').config()`
+
+Aside from `dotenv`, we also need the `process` module but `process` is a built-in module and does not need to be imported. We can use the `env` property of the `process` module to access the environment variables.
+
+```javascript
+require('dotenv').config()
+
+const mysql = require('mysql)
+const connection = mysql.createConnection({
+  host: process.env.HOST,
+  user: 'myUser',
+  password: 'myPassword',
+  database: 'myDB'
+})
+```
+
+But where are the environment variables? We can store all the environment variables in a separate `.env` file. We create them like this: `VARIABLE_NAME = 'value'`. Give the value `localhost` to the `HOST` environment variable.
+`HOST='localhost'`
+
+To access the environment variables stored in the `.env` file we code `process.env` followed by `.` and the variable name.
+
+```env
+HOST='localhost'
+DATABASE='myDB'
+PASSWORD='myPassword'
+USER='myUser'
+```
+require('dotenv').config()
+
+const mysql = require('mysql)
+const connection = mysql.createConnection({
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE
+})
+```javascript
+```
+
+### Database Interactions
+
+**Querying Database**
+
+We know `APIs` help us connect front-end and back-end, but how are `APIs` created? Let's create an `API` using `query()` and router!
+
+To execute SQL statements on a MySQL database using Node.js, we can use the `query()` function from the `mysql` module. The `query()` function takes 2 parameters: the SQL statement to be executed and a callback function to process the response.
+
+The callback function used as the 2nd parameter of `query()` only accepts 2 parameters. This is because we only need the first 2 parts which are `error` and `result` but the response could actually have more than 2 parts.
+
+```javascript
+const mysql = require('mysql')
+const con = mysql.createConnection({
+  host: "host",
+  user: "user",
+  password: "pw",
+  database: "db"
+})
+con.connect(err => {
+  if(err) throw err
+  con.query("SELECT * FROM customers", (error, result) => {
+    if(error) throw error
+    console.log(result)
+  })
+})
+```
+
+For `SELECT` statements used as the first parameter of the `query()` function, the result is returned as an array of objects. Logging result will print all columns queried. The syntax to access specific value is `result[index].column_name`.
+`console.log(result[index].column_name)`
+
+**Inserting into Database**
+
+We can use `query()` like we do when we retrieve data. However, instead of a `SELECT` statement for the first parameter, we use an `INSERT INTO` statement.
+
+```javascript
+const mysql = require('mysql')
+const con = mysql.createConnection({
+  host: "host",
+  user: "user",
+  password: "pw",
+  database: "db"
+})
+con.connect(err => {
+  if(err) throw err
+  con.query("INSERT INTO customers (name) VALUES ('Company ABC')", (error, result) => {
+    if(error) throw error
+    console.log(result)
+  })
+})
+```
+
+To parameterize a SQL statement, simply add `?` where we would enter values. For our example, that is after `VALUES`.
+`con.query("INSERT INTO customers (name) VALUES ?", () => {})`
+
+Next, we need to store the values in a 2-dimensional array. We'll use this array as the 2nd parameter of `query()`. Each row is an array and we store columns as the elements of each row. These row arrays are then all stored in one array.
+
+```javascript
+con.query("INSERT INTO customers (name) VALUES ?", 
+  [
+    ['ABC Company]', '2001'],
+    ['DEF Corp', '1998'],
+    ['GHI Inc.', '2015']
+  ]
+,() => {})
+```
+
+Unlike `SELECT` statements, `INSERT INTO` statements do not respond with data from the database. We can use the `affectedRows` property of `result` to see the number of new rows added.
+
+```javascript
+con.query("INSERT INTO customers (name) VALUES ?", 
+  [
+    ['ABC Company]', '2001'],
+    ['DEF Corp', '1998'],
+    ['GHI Inc.', '2015']
+  ]
+,(error, result) => {
+  if(error) throw error
+  console.log(result.affectedRows)
+})
+```
+
+**Integrating with Router**
+
+We learned that an `API` can have different actions based on the HTTP method. Such `APIs` can be created using `router` and `query()`. Now, we'll learn how we can create these `APIs` and how we can allow an `API` to perform different actions.
+
+```javascript
+const mysql = require('mysql')
+const DB_HOST = 'localhost'
+const DB_USER = 'root'
+const DB_PASSWORD = 'example_password'
+const DATABASE = 'example_db'
+const router = express.Router()
+const connection =
+	mysql.createConnection({
+		host: DB_HOST,
+		user: DB_USER,
+		password: DB_PASSWORD,
+		database: DATABASE
+	})
+router.get('/products', (req, res) => {
+	connection.query('SELECT * FROM products', (error, results) => {
+		if (error) {
+			console.log(error)
+			res.status(500).send('There is an issue with your request.')
+		} else {
+			const products = results
+			res.status(200).json(products)
+		}
+	})
+})
+```
+
+We can use the `post()` function to handle the request with the HTTP POST method. We can also use `query()` in the callback function of `router.post()` to execute an `INSERT INTO` statement on the database to insert data.
+
+```javascript
+const mysql = require('mysql')
+const DB_HOST = 'localhost'
+const DB_USER = 'root'
+const DB_PASSWORD = 'example_password'
+const DATABASE = 'example_db'
+const router = express.Router()
+const connection =
+	mysql.createConnection({
+		host: DB_HOST,
+		user: DB_USER,
+		password: DB_PASSWORD,
+		database: DATABASE
+	})
+router.post('/products', (req, res) => {
+	connection.query('INSERT INTO products VALUES (3,"Potted Plant" ,9.90)', (error, results) => {
+		if (error) {
+			console.log(error)
+			res.status(500).send('There is an issue with your request.')
+		} else {
+			res.status(200).json("{'Rows':" + results.affectedRows + "}")
+		}
+	})
+})
+```
+
+We can parameterize the SQL statement, then use the `body` property of the request as the second parameter to insert multiple values.
+`connection.query('INSERT INTO products VALUES ?', req.body, () => {})`
+
+We can use the `put()` function to handle the request with the HTTP PUT method. For requests involving identification, we can append `/:id` to the endpoint to be used as reference later.
+
+```javascript
+const mysql = require('mysql')
+const DB_HOST = 'localhost'
+const DB_USER = 'root'
+const DB_PASSWORD = 'example_password'
+const DATABASE = 'example_db'
+const router = express.Router()
+const connection =
+	mysql.createConnection({
+		host: DB_HOST,
+		user: DB_USER,
+		password: DB_PASSWORD,
+		database: DATABASE
+	})
+router.post('/products/:id', (req, res) => {
+	connection.query('UPDATE products SET name = ? WHERE id=' + req.params.id, req.body, (error, results) => {
+		if (error) {
+			console.log(error)
+			res.status(500).send('There is an issue with your request.')
+		} else {
+			res.status(200).json("{'Rows':" + results.affectedRows + "}")
+		}
+	})
+})
 ```
