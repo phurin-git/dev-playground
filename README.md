@@ -2269,3 +2269,453 @@ router.post('/products/:id', (req, res) => {
 	})
 })
 ```
+
+## TypeScript
+
+### Basics
+
+**Static Types**
+
+TypeScript define type **annotation** of the variable. (static type)
+
+```typescript
+let greeting: string = "Hello, world!"
+greeting = 42 // Error
+```
+
+**Type Annotations**
+
+```typescript
+let distance: number = 45
+let isCompleted: boolean = true
+let anything: any = "I can be anything"
+```
+
+If we create a variable without a type, TypeScript infers the type based on the value assigned to it. This is called **type inference**.
+
+```typescript
+let price = 100; // number
+price = "expensive" // Error
+```
+
+**Union Types**
+
+Union types allow us to allow multiple types for one variable. The variable can be one value or another.
+
+```typescript
+let variable: number | string
+let variable: number | string | boolean
+```
+
+**Arrays**
+
+We add an opening and closing square bracket right after the type to indicate that this variable will hold an array of the given type.
+
+```typescript
+let numArray: number[]
+let stuff: (number | string)[]
+```
+
+**Objects**
+
+We define the attributes inside the object as we have defined types before. Start with the name, followed by a colon and its type.
+
+```typescript
+let person: {
+    name: string,
+    age: number
+}
+
+person = {
+    name: "John",
+    age: 25
+}
+
+let player: {
+    name: string,
+    scores: number[]
+} = {
+    name: "Lee",
+    scores: [1, 2, 3]
+}
+```
+
+### More Types
+
+**Type Aliases**
+
+We use **type aliases** to give types a name, making code clearer and safer. We define **type aliases** using the `type` keyword.
+
+```typescript
+
+type Human = {
+    name: string,
+    age: number
+}
+
+let jacky: Human = {
+    name: "Jacky",
+    age: 63
+}
+
+type PriceSeries = number[]
+const stockOrices: PriceSeries = [108, 103, 110]
+
+type UserID = number | string
+let id: UserID = '#251120'
+```
+
+**Intersection Types**
+
+Intersection types in TypeScript allow you to combine multiple types into a single type. A variable of an intersection type must satisfy all the combined types.
+
+```typescript
+type Person = {
+    name: string
+}
+
+type Employee = {
+    employeeId: number
+}
+
+type PersonEmployee = Person & Employee
+
+let person: PersonEmployee = {
+    name: "Miriam",
+    employeeId: 5
+}
+```
+
+**Interfaces**
+
+Interfaces work similarly to type annotations in TypeScript, allowing you to define custom types for objects and enforce type safety.
+
+```typescript
+interface Person {
+    name: string
+}
+
+let person: Person = {
+    name: "Lisa"
+}
+
+interface Animal {
+    species: string
+}
+
+interface Animal extends Animal {
+    name: string
+}
+```
+
+**Special Properties**
+
+Optional properties are not required in the objects that implement the interface. We mark a property as optional with a question mark `?`.
+
+```typescript
+interface Person {
+    firstName: string,
+    lastname: string,
+    middleName?: string
+}
+
+let phurin: Person = {  // No error
+    firstName: "Phurin",
+    lastname: "Nararat"
+}
+```
+
+In TypeScript, `readonly` properties prevent modifications after initialization, keeping their values constant.
+
+```typescript
+type Character = {
+    readonly id: number,
+    name: string
+}
+
+let anna: Character = {
+    id: 1,
+    name: "Anna"
+}
+
+anna.id = 2 // Error
+```
+
+Just like multiple attributes can be marked as optional in an object type.
+
+```typescript
+type Food = {
+    type: string,
+    brand: string?,
+    color: string?
+}
+```
+
+### Functions, Classes, & Enums
+
+**Functions**
+
+Just like in JavaScript, we define a function in TypeScript using the `function` keyword. One difference is that we can and should define the function's return type. We use `void` to indicate no return at all. When using parameters in TypeScript, we also need to specify the type of the arguments we use.
+
+```typescript
+
+function greet(name: string): void {
+    console.log("Hello, " + name)
+}
+
+function sum(a:number, b: number): number {
+    return a + b
+}
+
+function sumArray(numbers: number[]): number {
+    return numbers.reduce((sum, num) => sum + num, 0)
+}
+```
+
+**Function Types & Signature**
+
+We can also declare that a variable can hold a function. We do this with the `Function` type annotation.
+
+```typescript
+let myFirstFunction: Function
+myFirstFunction = function(a: number, b: number): number {
+    return a + b
+}
+```
+
+If we use the `Function` type annotation, we know that this variable will hold some kind of function, but we don’t know the details. We can then assign any function. This is not very type-safe as we don't define the parameters or return type.
+
+We can be more specific about the function parameters and return type. We use arrow function syntax to create a *function signature*.
+
+```typescript
+let mySecondFunction: (x: number, y: number) => number
+mySecondFunction = function(x: number, y: number): number {
+    return x + y
+}
+
+let result = mySecondFunction(5, 10)
+```
+
+Type aliases can clarify certain coding patterns, like callbacks. Let's use a type alias for our signature to give it a name like `Callback`.
+
+```typescript
+type Callback = (data: string) => void
+
+function processString(input: string, callback: Callback): void {
+    const processed = input.toUpperCase()
+    callback(processed)
+}
+
+const logResult: Callback = (data: string) => {
+    console.log(data)
+}
+
+processString("I'm hungry!", logResult)
+```
+
+**Optinal & Default Parameter**
+
+In TypeScript, we can make an argument of a function optional by appending a question mark `?` to the parameter name.
+
+```typescript
+function greet(name: string, age?: number): void {
+    if (age !== undefined) {
+        console.log(`Hello ${name}, you are ${age} years old.`)
+    } else {
+        console.log(`Hello ${name} - age not specified.`)
+    }
+}
+
+greet("Maria") // No error
+greet("Maria", 41)
+```
+
+If we want to provide a default value for an argument, TypeScript has us covered with default parameters!
+
+```typescript
+function calculateToPrice(price: number, texRate: number = 0.05): number {
+    return price + (price * taxRate)
+}
+
+function calculateArea(width: number, height: number = width): number {
+    return width * height
+}
+```
+
+**Classes**
+
+Similar to classes in JavaScript, we define them using the `class` keyword. There's no difference to JavaScript when adding a constructor to the class. But when we pass parameters to a constructor we need to specify the parameter's type. And when we define a class parameter, we also want to specify its type.
+
+```typescript
+class Person {
+    name:string
+    constructor(name: string){
+        this.name = name
+    }
+}
+```
+
+In JavaScript, all properties are accessible from the outside. 
+- The `public` keyword in TypeScript makes that explicit. 
+- The `private` keyword in TypeScript makes the property or method of a class inaccessible from outside that class.
+- The `protected` keyword in TypeScript prevents a property or method of a class from being accessed outside of that class and its subclasses.
+
+```typescript
+class Employee {
+    public name: string
+    private id: number
+    protected department: string
+    gender: string
+    constructor(name: string, id: number, department: string, public gender: string) {
+        this.name = name
+        this.id = id
+        this.department = department
+        this.gender = gender
+    }
+}
+
+const employee = new Employee("Phurin", 1234, "Engineer", "Male")
+console.log(employee.name) // No error
+console.log(employee.id) // Error
+```
+
+**Enums**
+
+Enums or enumerations give more friendly names to a set of named constants. We start with the keyword `enum`. Then we need a name for the enum as well as open and closed braces. Finally, we add the values inside the braces, separated by a comma.
+
+In TypeScript, each member of enum is automatically assigned a number starting from 0, automatically.
+
+```typescript
+enum Directions {
+    Up,
+    Down,
+    Left,
+    Right
+}
+
+console.log(Directions.Up) // 0
+```
+
+We can manually set the value of enum members. We only need to do this with the first one, and the others are incremented automatically.
+
+```typescript
+enum Directions {
+    Up = 5,
+    Down,
+    Left,
+    Right
+}
+
+console.log(Directions.Up) //5
+console.log(Directions.Down) //6
+console.log(Directions.Left) //7
+console.log(Directions.Right) //8
+```
+
+It also works the other way around. Enums in TypeScript are objects. So, you can also get the name of an enum member from its value.
+
+```typescript
+enum Directions {
+    Up = 1,
+    Down,
+    Left,
+    Right
+}
+
+console.log(Directions[1]) // Up
+```
+
+We can also use string values instead of auto-incrementing numbers.
+
+```typescript
+enum MusicGenres {
+    Classical = "CLASSICAL",
+    Rock = "ROCK",
+    Pop = "Pop",
+    Jazz = "Jazz"
+}
+
+console.log(MusicGenres.Classical) // CLASSICAL
+
+```
+
+A single enum can store both numbers and strings.
+
+```typescript
+enum Options {
+    Yes = 1,
+    No = "No"
+}
+```
+
+### Generics
+
+Generics allow us to write flexible, reusable code that can work with any data type while maintaining type safety. They allow us to create code that can work with various types without sacrificing the benefits of strong typing.
+
+let's look at a simple function that finds the biggest number in an array.
+
+```typescript
+function findMaxNumber(array: number[]): number {
+    return array.reduce((max, item) => (item > max ? item : max))
+}
+
+const maxNumber = findMaxNumber([1, 3, 2])
+console.log(maxNumber)
+```
+
+If we want to do the same with strings where we look for the maximum value alphabetically, we could define another function.
+
+```typescript
+function findMaxNumber(array: number[]): number {
+    return array.reduce((max, item) => (item > max ? item : max))
+}
+
+const maxNumber = findMaxNumber([1, 3, 2])
+console.log(maxNumber)
+
+function findMaxString(array: string[]): string {
+    return array.reduce((max, item) => (item > max ? item : max))
+}
+const maxString = findMaxString(["a", "b", "c"])
+console.log(maxString)
+```
+
+Instead of defining the function twice, we can use generics to allow any type later. For now, we use `T` as a placeholder for any type. After declaring the generic type, we can call it with any type.
+
+```typescript
+function findMax<T>(array: T[]): T {
+    return array.reduce((max, item) => (item > max ? item : max))
+}
+
+const maxNumber = findMax<number>([1, 3, 2])
+console.log(maxNumber)
+
+const maxString = findMax<string>(["a", "b", "c"])
+console.log(maxString)
+```
+
+We can also use generics when creating a class. We define the generic class with `<T>` that we then can use throughout the class. And we also can leave the type specification for the generic out as TypeScript can infer it.
+
+```typescript
+class Container<T> {
+    constructor(public value: T) {}
+}
+
+let numberContainer = new Container<number>(42)
+let stringContainer = new Container<string>("Hello")
+let booleanContainer = new Container(true)
+```
+
+As you know, we can also define an array of strings. This also works with the generic way of defining array types. We can also create interfaces with a generic type. The initial syntax looks similar to classes with generics that we've seen before.
+
+```typescript
+let names: Array<string> = ["Hello", "TypeScript"]
+
+class BoxClass<T> {
+    contents: T
+}
+
+interface BoxInterface<T> {
+    contents: T
+}
+```
