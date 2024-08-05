@@ -2725,3 +2725,1078 @@ router.post('/products/:id', (req, res) => {
 	})
 })
 ```
+
+
+## MongoDB Cheat Sheet
+
+### The MongoDB Document Model
+
+[https://www.mongodb.com/developer/products/mongodb/cheat-sheet/#table-of-contents]
+
+**Document Structure**
+
+The values in a document can be any data type, including strings, objects, arrays, booleans, nulls, dates, ObjectIds, and more. Here's the syntax for a MongoDB document, followed by an example:
+
+Syntax:
+
+```javascript
+{
+    "key": value,
+    "key": value,
+    "key" : value
+}
+```
+
+Example:
+
+```javascript
+{
+    "_id": 1,
+    "name": "AC3 Phone",
+    "colors" : ["black", "silver"],
+    "price" : 200,
+    "available" : true
+}
+```
+
+### Referencing Data in Documents
+
+**Embeding**
+
+Pros: 
+- Single query to retrieve data
+- Single operation to update/delete
+
+Cons:
+- Data duplication
+- Large documents
+
+**Referencing**
+
+Pros:
+- No duplication
+- Smaller documents
+
+Cons:
+- Need to join data from multiple documents
+
+### CRUD Operation: Insert and Find Documents
+
+**Insert a Single Document**
+
+Use `insertOne()` to insert a document into a collection. Within the parentheses of `insertOne()`, include an object that contains the document data. Here's an example:
+
+```javascript
+db.grades.insertOne({
+  student_id: 654321,
+  products: [
+    {
+      type: "exam",
+      score: 90,
+    },
+    {
+      type: "homework",
+      score: 59,
+    },
+    {
+      type: "quiz",
+      score: 75,
+    },
+    {
+      type: "homework",
+      score: 88,
+    },
+  ],
+  class_id: 550,
+})
+```
+
+**Insert Multiple Documents**
+
+Use `insertMany()` to insert multiple documents at once. Within `insertMany()`, include the documents within an array. Each document should be separated by a comma. Here's an example:
+
+```javascript
+db.grades.insertMany([
+  {
+    student_id: 546789,
+    products: [
+      {
+        type: "quiz",
+        score: 50,
+      },
+      {
+        type: "homework",
+        score: 70,
+      },
+      {
+        type: "quiz",
+        score: 66,
+      },
+      {
+        type: "exam",
+        score: 70,
+      },
+    ],
+    class_id: 551,
+  },
+  {
+    student_id: 777777,
+    products: [
+      {
+        type: "exam",
+        score: 83,
+      },
+      {
+        type: "quiz",
+        score: 59,
+      },
+      {
+        type: "quiz",
+        score: 72,
+      },
+      {
+        type: "quiz",
+        score: 67,
+      },
+    ],
+    class_id: 550,
+  },
+  {
+    student_id: 223344,
+    products: [
+      {
+        type: "exam",
+        score: 45,
+      },
+      {
+        type: "homework",
+        score: 39,
+      },
+      {
+        type: "quiz",
+        score: 40,
+      },
+      {
+        type: "homework",
+        score: 88,
+      },
+    ],
+    class_id: 551,
+  },
+])
+```
+
+**Find a Document with Equality**
+
+When given equality with an `_id` field, the `find()` command will return the specified document that matches the `_id`. Here's an example:
+
+```javascript
+db.zips.find({ _id: ObjectId("5c8eccc1caa187d17ca6ed16") })
+```
+
+**Find a Document by Using the `$in` Operator**
+
+Use the `$in` operator to select documents where the value of a field equals any value in the specified array. Here's an example:
+
+```javascript
+db.zips.find({ city: { $in: ["PHOENIX", "CHICAGO"] } })
+```
+
+**Finding Documents by Using Comparison Operators**
+
+- `$gt`
+    operator to match documents with a field **greater than** the given value. For example: 
+    ```javascript
+    db.sales.find({ "items.price": { $gt: 50}})
+    ```
+
+- `$lt`
+    operator to match documents with a field **less than** the given value. For example: 
+    ```javascript
+    db.sales.find({ "items.price": { $lt: 50}})
+    ```
+
+- `$lte`
+    operator to match documents with a field **less than or equal to** the given value. For example: 
+    ```javascript
+    db.sales.find({ "customer.age": { $lte: 65}})
+    ```
+
+- `$gte`
+    operator to match documents with a field **greater than or equal to** the given value. For example: 
+    ```javascript
+    db.sales.find({ "customer.age": { $gte: 65}})
+    ```
+
+**Find Documents with an Array That Contains a Specified Value**
+
+in the following example, "InvestmentFund" is not enclosed in square brackets, so MongoDB returns all documents within the `products` array that contain the specified value.
+
+```javascript
+db.accounts.find({ products: "InvestmentFund"})
+```
+
+**Find a Document by Using the `$elemMatch` Operator**
+
+Use the `$elemMatch` operator to find all documents that contain the specified subdocument. For example:
+
+```javascript
+db.sales.find({
+  items: {
+    $elemMatch: { name: "laptop", price: { $gt: 800 }, quantity: { $gte: 1 } },
+  },
+})
+```
+
+**Find a Document by Using Implicit `$and`**
+Use implicit `$and` to select documents that match multiple expressions. For example:
+
+```javascript
+db.routes.find({ "airline.name": "Southwest Airlines", stops: { $gte: 1 } })
+```
+
+**Find a Document by Using the `$or` Operator**
+
+Use the `$or` operator to select documents that match at least one of the included expressions. For example:
+
+```javascript
+db.routes.find({
+  $or: [{ dst_airport: "SEA" }, { src_airport: "SEA" }],
+})
+```
+
+**Find a Document by Using the `$and` Operator**
+
+Use the `$and` operator to use multiple `$or` expressions in your query.
+
+```javascript
+db.routes.find({
+  $and: [
+    { $or: [{ dst_airport: "SEA" }, { src_airport: "SEA" }] },
+    { $or: [{ "airline.name": "American Airlines" }, { airplane: 320 }] },
+  ]
+})
+```
+
+### CRUD Operations: Replace and Delete Documents
+
+**Replacing a Document in MongoDB**
+
+To replace documents in MongoDB, we use the `replaceOne()` method. The `replaceOne()` method takes the following parameters:
+- `filter`: A query that matches the document to replace.
+- `replacement`: The new document to replace the old one with.
+- `options`: An object that specifies options for the update.
+
+```javascript
+db.books.replaceOne(
+  {
+    _id: ObjectId("6282afeb441a74a98dbbec4e"),
+  },
+  {
+    title: "Data Science Fundamentals for Python and MongoDB",
+    isbn: "1484235967",
+    publishedDate: new Date("2018-5-10"),
+    thumbnailUrl:
+      "https://m.media-amazon.com/images/I/71opmUBc2wL._AC_UY218_.jpg",
+    authors: ["David Paper"],
+    categories: ["Data Science"],
+  }
+)
+```
+
+**Updating MongoDB Documents by Using `updateOne()`**
+
+The `updateOne()` method accepts a filter document, an update document, and an optional options object. MongoDB provides update operators and options to help you update documents. In this section, we'll cover three of them: `$set`, `upsert`, and `$push`.
+
+- `$set`
+    operator replaces the value of a field with the specified value, as shown in the following code:
+
+    ```javascript
+    db.podcasts.updateOne(
+        {
+            _id: ObjectId("5e8f8f8f8f8f8f8f8f8f8f8"),
+        },
+
+        {
+            $set: {
+                subscribers: 98562,
+            },
+        }
+    )
+  ```
+
+- `upsert`
+    option creates a new document if no documents match the filtered criteria. Here's an example:
+
+    ```javascript
+    db.podcasts.updateOne(
+        { title: "The Developer Hub" },
+        { $set: { topics: ["databases", "MongoDB"] } },
+        { upsert: true }
+    )
+    ```
+
+- `$push`
+    operator adds a new value to the hosts array field. Here's an example:
+
+    ```javascript
+    db.podcasts.updateOne(
+        { _id: ObjectId("5e8f8f8f8f8f8f8f8f8f8f8") },
+        { $push: { hosts: "Nic Raboy" } }
+    )
+    ```
+
+**Updating MongoDB Documents by Using `findAndModify()`**
+
+The `findAndModify()` method is used to find and replace a single document in MongoDB. It accepts a filter document, a replacement document, and an optional options object. The following code shows an example:
+
+```javascript
+db.podcasts.findAndModify({
+  query: { _id: ObjectId("6261a92dfee1ff300dc80bf1") },
+  update: { $inc: { subscribers: 1 } },
+  new: true,
+})
+```
+
+**Updating MongoDB Documents by Using `updateMany()`**
+
+To update multiple documents, use the `updateMany()` method. This method accepts a filter document, an update document, and an optional options object. The following code shows an example:
+
+```javascript
+db.books.updateMany(
+  { publishedDate: { $lt: new Date("2019-01-01") } },
+  { $set: { status: "LEGACY" } }
+)
+```
+
+**Deleting Documents in MongoDB**
+
+To delete documents, use the `deleteOne()` or `deleteMany()` methods. Both methods accept a filter document and an options object.
+
+- `deleteOne()`
+
+    ```javascript
+    db.podcasts.deleteOne({ _id: Objectid("6282c9862acb966e76bbf20a") })
+    ```
+- `deleteMany()`
+
+    ```javascript
+    db.podcasts.deleteMany({category: “crime”})
+    ```
+
+### CRUD Operations: Modify Query Results
+
+**Sorting Query Results**
+
+Use `cursor.sort()` to return query results in a specified order. Within the parentheses of `sort()`, include an object that specifies the field(s) to sort by and the order of the sort. Use 1 for ascending order, and -1 for descending order.
+
+Syntax:
+
+```javascript
+db.collection.find(<query>).sort(<sort>)
+```
+
+Example:
+
+```javascript
+// Return data on all music companies, sorted alphabetically from A to Z.
+db.companies.find({ category_code: "music" }).sort({ name: 1 });
+```
+
+To ensure documents are returned in a consistent order, include a field that contains unique values in the sort. An easy way to do this is to include the `_id` field in the sort. Here's an example:
+
+```javascript
+// Return data on all music companies, sorted alphabetically from A to Z. Ensure consistent sort order
+db.companies.find({ category_code: "music" }).sort({ name: 1, _id: 1 });
+```
+
+****Limiting Query Results**
+
+Use `cursor.limit()` to specify the maximum number of documents the cursor will return. Within the parentheses of `limit()`, specify the maximum number of documents to return.
+
+Syntax:
+
+```javascript
+db.companies.find(<query>).limit(<number>)
+```
+
+Example:
+
+```javascript
+// Return the three music companies with the highest number of employees. Ensure consistent sort order.
+db.companies
+  .find({ category_code: "music" })
+  .sort({ number_of_employees: -1, _id: 1 })
+  .limit(3);
+```
+
+**Add a Projection Document**
+
+To specify fields to include or exclude in the result set, add a projection document as the second parameter in the call to `db.collection.find()`.
+
+Syntax:
+
+```javascript
+db.collection.find( <query>, <projection> )
+```
+
+**Include a Field**
+
+To include a field, set its value to 1 in the projection document.
+
+Syntax:
+
+```javascript
+db.collection.find( <query>, { <field> : 1 })
+```
+
+Example:
+
+```javascript
+// Return all restaurant inspections - business name, result, and _id fields only
+db.inspections.find(
+  { sector: "Restaurant - 818" },
+  { business_name: 1, result: 1 }
+)
+```
+
+**Exclude a Field**
+
+To exclude a field, set its value to 0 in the projection document.
+
+Syntax:
+
+```javascript
+db.collection.find(query, { <field> : 0, <field>: 0 })
+```
+
+Example:
+
+```javascript
+// Return all inspections with result of "Pass" or "Warning" - exclude date and zip code
+db.inspections.find(
+  { result: { $in: ["Pass", "Warning"] } },
+  { date: 0, "address.zip": 0 }
+)
+```
+
+While the `_id` field is included by default, it can be suppressed by setting its value to 0 in any projection.
+
+```javascript
+// Return all restaurant inspections - business name and result fields only
+db.inspections.find(
+  { sector: "Restaurant - 818" },
+  { business_name: 1, result: 1, _id: 0 }
+)
+```
+
+**Count Documents**
+
+Use `db.collection.countDocuments()` to count the number of documents that match a query. `countDocuments()` takes two parameters: a query document and an options document.
+
+Syntax:
+
+```javacript
+db.collection.countDocuments( <query>, <options> )
+```
+
+Example:
+
+```javascript
+// Count number of docs in trip collection
+db.trips.countDocuments({})
+// Count number of trips over 120 minutes by subscribers
+db.trips.countDocuments({ tripduration: { $gt: 120 }, usertype: "Subscriber" })
+```
+
+### CRUD Operations in Node.js
+
+**Insert a Document**
+
+To insert a single document into a collection, append `insertOne()` to the collection variable. The `insertOne()` method accepts a document as an argument and returns a promise. In this example, the document that's being inserted is stored in a variable called `sampleAccount`, which is declared just above the `main()` function.
+
+```javascript
+const dbname = "bank"
+const collection_name = "accounts"
+ 
+const accountsCollection = client.db(dbname).collection(collection_name)
+
+const sampleAccount = {
+ account_holder: "Linus Torvalds",
+ account_id: "MDB829001337",
+ account_type: "checking",
+ balance: 50352434,
+}
+
+const main = async () => {
+ try {
+   await connectToDatabase()
+   // insertOne method is used here to insert the sampleAccount document
+   let result = await accountsCollection.insertOne(sampleAccount)
+   console.log(`Inserted document: ${result.insertedId}`)
+ } catch (err) {
+   console.error(`Error inserting document: ${err}`)
+ } finally {
+   await client.close()
+ }
+}
+ 
+main()
+```
+
+**Insert Many Documents**
+
+To insert more than one document, append the `insertMany()` method to the `collection` object, and then pass an array of documents to the `insertMany()` method. The `insertMany()` method returns a promise. We await the promise to get the result of the operation, which we then use to log the number of documents that are inserted to the console. In this example, the accounts to be inserted are stored in an array variable called `sampleAccounts`. This variable is defined just above the main() function.
+
+```javascript
+const dbname = "bank"
+const collection_name = "accounts"
+ 
+const accountsCollection = client.db(dbname).collection(collection_name)
+
+const sampleAccounts = [
+ {
+   account_id: "MDB011235813",
+   account_holder: "Ada Lovelace",
+   account_type: "checking",
+   balance: 60218,
+ },
+ {
+   account_id: "MDB829000001",
+   account_holder: "Muhammad ibn Musa al-Khwarizmi",
+   account_type: "savings",
+   balance: 267914296,
+ },
+]
+ 
+const main = async () => {
+ try {
+   await connectToDatabase()
+   let result = await accountsCollection.insertMany(sampleAccounts)
+   console.log(`Inserted ${result.insertedCount} documents`)
+   console.log(result)
+ } catch (err) {
+   console.error(`Error inserting documents: ${err}`)
+ } finally {
+   await client.close()
+ }
+}
+
+main()
+```
+
+**Using `find()`**
+
+The `find()` method is a read operation that returns a cursor to the documents that match the query. The `find()` method takes a query or filter document as an argument. If you do not specify a query document, the `find()` method returns all documents in the collection.
+
+In this example, we find all accounts that have a balance greater than or equal to 4700. The `find()` method accepts a query filter, which we assign to a variable called `documentsToFind`. We process each document that’s returned from the `find()` method by iterating the cursor, which is assigned to the variable `result`.
+
+```javascript
+const dbname = "bank"
+const collection_name = "accounts"
+ 
+const accountsCollection = client.db(dbname).collection(collection_name)
+
+// Document used as a filter for the find() method
+const documentsToFind = { balance: { $gt: 4700 } }
+ 
+const main = async () => {
+ try {
+   await connectToDatabase()
+   // find() method is used here to find documents that match the filter
+   let result = accountsCollection.find(documentsToFind)
+   let docCount = accountsCollection.countDocuments(documentsToFind)
+   await result.forEach((doc) => console.log(doc))
+   console.log(`Found ${await docCount} documents`)
+ } catch (err) {
+   console.error(`Error finding documents: ${err}`)
+ } finally {
+   await client.close()
+ }
+}
+
+main()
+```
+
+**Using `findOne()`**
+
+In this example, we return a single document from a query, which is assigned to a variable called `documentToFind`. We use the `findOne()` method on the collection object to return the first document that matches the filter criteria, which are defined in the `documentToFind` variable.
+
+```javascript
+const dbname = "bank"
+const collection_name = "accounts"
+ 
+const accountsCollection = client.db(dbname).collection(collection_name)
+
+// Document used as a filter for the findOne() method
+const documentToFind = { _id: ObjectId("62a3638521a9ad028fdf77a3") }
+
+const main = async () => {
+ try {
+   await connectToDatabase()
+   // findOne() method is used here to find a the first document that matches the filter
+   let result = await accountsCollection.findOne(documentToFind)
+   console.log(`Found one document`)
+   console.log(result)
+ } catch (err) {
+   console.error(`Error finding document: ${err}`)
+ } finally {
+   await client.close()
+ }
+}
+
+main()
+```
+
+**Using `updateOne()`**
+
+In this example, we use the `updateOne()` to update the value of an existing field in a document. Append the `updateOne()` method to the collection object to update a single document that matches the filter criteria, which are stored in the `documentToUpdate` variable. The update document contains the changes to be made and is stored in the `update` variable.
+
+```javascript
+const dbname = "bank"
+const collection_name = "accounts"
+
+const accountsCollection = client.db(dbname).collection(collection_name)
+
+const documentToUpdate = { _id: ObjectId("62d6e04ecab6d8e130497482") }
+
+const update = { $inc: { balance: 100 } }
+
+
+const main = async () => {
+  try {
+    await connectToDatabase()
+    let result = await accountsCollection.updateOne(documentToUpdate, update)
+    result.modifiedCount === 1
+      ? console.log("Updated one document")
+      : console.log("No documents updated")
+  } catch (err) {
+    console.error(`Error updating document: ${err}`)
+  } finally {
+    await client.close()
+  }
+}
+
+main()
+```
+
+**Using `updateMany()`**
+
+In this example, we update many documents by adding a value to the `transfers_complete` array of all checking account documents. The `updateMany()` method is appended to the collection object. The method accepts a filter that matches the document(s) that we want to update and an update statement that instructs the driver how to change the matching document. Both the filter and the update documents are stored in variables. The `updateMany()` method updates all the documents in the collection that match the filter.
+
+```javacript
+const database = client.db(dbname);
+const bank = database.collection(collection_name);
+
+const documentsToUpdate = { account_type: "checking" };
+
+const update = { $push: { transfers_complete: "TR413308000" } }
+
+const main = async () => {
+  try {
+    await connectToDatabase()
+    let result = await accountsCollection.updateMany(documentsToUpdate, update)
+    result.modifiedCount > 0
+      ? console.log(`Updated ${result.modifiedCount} documents`)
+      : console.log("No documents updated")
+  } catch (err) {
+    console.error(`Error updating documents: ${err}`)
+  } finally {
+    await client.close()
+  }
+}
+
+main()
+```
+
+**Using `deleteOne()`**
+
+To delete a single document from a collection, use the `deleteOne()` method on a collection object. This method accepts a query filter that matches the document that you want to delete. If you do not specify a filter, MongoDB matches and deletes the first document in the collection. Here's an example:
+
+```javascript
+const dbname = "bank"
+const collection_name = "accounts"
+
+const accountsCollection = client.db(dbname).collection(collection_name)
+
+const documentToDelete = { _id: ObjectId("62d6e04ecab6d8e13049749c") }
+
+const main = async () => {
+  try {
+    await connectToDatabase()
+    let result = await accountsCollection.deleteOne(documentToDelete)
+    result.deletedCount === 1
+      ? console.log("Deleted one document")
+      : console.log("No documents deleted")
+  } catch (err) {
+    console.error(`Error deleting documents: ${err}`)
+  } finally {
+    await client.close()
+  }
+}
+
+main()
+```
+
+**Using `deleteMany()`**
+
+You can delete multiple documents from a collection in a single operation by calling the `deleteMany()` method on a collection object. To specify which documents to delete, pass a query filter that matches the documents that you want to delete. If you provide an empty document, MongoDB matches all documents in the collection and deletes them. In the following example, we delete all accounts with a balance of less than 500 by using a query filter. Then, we print the total number of deleted documents.
+
+```javacript
+const dbname = "bank"
+const collection_name = "accounts"
+
+const accountsCollection = client.db(dbname).collection(collection_name)
+
+const documentsToDelete = { balance: { $lt: 500 } }
+
+const main = async () => {
+ try {
+   await connectToDatabase()
+   let result = await accountsCollection.deleteMany(documentsToDelete)
+   result.deletedCount > 0
+     ? console.log(`Deleted ${result.deletedCount} documents`)
+     : console.log("No documents deleted")
+ } catch (err) {
+   console.error(`Error deleting documents: ${err}`)
+ } finally {
+   await client.close()
+ }
+}
+ 
+main()
+```
+
+**Creating a Transaction**
+
+In this section, we'll go through the code to create a transaction step by step. We start the transaction by using the session’s `withTransaction()` method. We then define the sequence of operations to perform inside the transactions, passing the `session` object to each operation in the transactions.
+
+1. Create variables used in the transaction.
+
+```javascript
+// Collections
+const accounts = client.db("bank").collection("accounts")
+const transfers = client.db("bank").collection("transfers")
+
+// Account information
+let account_id_sender = "MDB574189300"
+let account_id_receiver = "MDB343652528"
+let transaction_amount = 100
+```
+
+2. Start a new session.
+
+```javascript
+const session = client.startSession()
+```
+
+3. Begin a transaction with the `WithTransaction()` method on the session.
+
+```javascript
+const transactionResults = await session.withTransaction(async () => {
+  // Operations will go here
+})
+```
+
+4. Update the `balance` field of the sender’s account by decrementing the `transaction_amount` from the `balance` field.
+
+```javascript
+const senderUpdate = await accounts.updateOne(
+  { account_id: account_id_sender },
+  { $inc: { balance: -transaction_amount } },
+  { session }
+)
+```
+
+5. Update the `balance` field of the receiver’s account by incrementing the `transaction_amount` to the `balance` field.
+
+```javascript
+const receiverUpdate = await accounts.updateOne(
+  { account_id: account_id_receiver },
+  { $inc: { balance: transaction_amount } },
+  { session }
+)
+```
+
+6. Create a transfer document and insert it into the `transfers` collection.
+
+```javascript
+const transfer = {
+  transfer_id: "TR21872187",
+  amount: 100,
+  from_account: account_id_sender,
+  to_account: account_id_receiver,
+}
+
+const insertTransferResults = await transfers.insertOne(transfer, { session })
+```
+
+7. Update the `transfers_complete` array of the sender’s account by adding the `transfer_id` to the array.
+
+```javascript
+const updateSenderTransferResults = await accounts.updateOne(
+  { account_id: account_id_sender },
+  { $push: { transfers_complete: transfer.transfer_id } },
+  { session }
+)
+```
+
+8. Update the `transfers_complete` array of the receiver’s account by adding the `transfer_id` to the array.
+
+```javascript
+const updateReceiverTransferResults = await accounts.updateOne(
+  { account_id: account_id_receiver },
+  { $push: { transfers_complete: transfer.transfer_id } },
+  { session }
+)
+```
+
+9. Log a message regarding the success or failure of the transaction.
+
+```javascript
+if (transactionResults) {
+  console.log("Transaction completed successfully.")
+} else {
+  console.log("Transaction failed.")
+}
+```
+
+10. Catch any errors and close the session.
+
+```javascript
+} catch (err) {
+  console.error(`Transaction aborted: ${err}`)
+  process.exit(1)
+} finally {
+  await session.endSession()
+  await client.close()
+}
+```
+
+### Aggregation
+
+**Definitions**
+
+- **Aggregation**: Collection and summary of data
+- **Stage**: One of the built-in methods that can be completed on the data, but does not permanently alter it
+- **Aggregation pipeline**: A series of stages completed on the data in order
+
+**Structure of an Aggregation Pipeline**
+
+```javascript
+db.collection.aggregate([
+    {
+        $stage1: {
+            { expression1 },
+            { expression2 }...
+        },
+        $stage2: {
+            { expression1 }...
+        }
+    }
+])
+```
+
+**Using `$match` and `$group` Stages in a MongoDB Aggregation Pipeline**
+
+- `$match`
+    stage filters for documents that match specified conditions. Here's the code for `$match`:
+    
+    ```javascript
+    {
+        $match: {
+            "field_name": "value"
+        }
+    }
+    ```
+
+- `$group`
+    stage groups documents by a group key.
+
+    ```javascript
+    {
+        $group:
+        {
+            _id: <expression>, // Group key
+            <field>: { <accumulator> : <expression> }
+        }
+    }
+    ```
+
+- `$match` and `$group` in an Aggregation Pipeline
+
+    The following aggregation pipeline finds the documents with a field named "state" that matches a value "CA" and then groups those documents by the group key "$city" and shows the total number of zip codes in the state of California.
+    
+    ```javascript
+    db.zips.aggregate([
+        {   
+            $match: { 
+            state: "CA"
+            }
+        },
+        {
+        $group: {
+            _id: "$city",
+            totalZips: { $count : { } }
+            }
+        }
+    ])
+    ```
+
+**Using `$sort` and `$limit` Stages in a MongoDB Aggregation Pipeline**
+
+- `$sort`
+    stage sorts all input documents and returns them to the pipeline in sorted order. We use 1 to represent ascending order, and -1 to represent descending order.
+
+    ```javascript
+    {
+        $sort: {
+            "field_name": 1
+        }
+    }
+    ```
+
+- `$limit`
+    stage returns only a specified number of records.
+
+    ```javascript
+    {
+        $limit: 5
+    }
+    ```
+
+- `$sort` and `$limit` in an Aggregation Pipeline
+    The following aggregation pipeline sorts the documents in descending order, so the documents with the greatest `pop` value appear first, and limits the output to only the first five documents after sorting.
+
+    ```javascript
+    db.zips.aggregate([
+    {
+        $sort: {
+            pop: -1
+        }
+    },
+    {
+        $limit:  5
+    }
+    ])
+    ```
+
+### Using `$project`, `$count`, and `$set` Stages in a MongoDB Aggregation Pipeline
+
+- `$project`
+    stage specifies the fields of the output documents. 1 means that the field should be included, and 0 means that the field should be supressed. The field can also be assigned a new value.
+
+    ```javascript
+    {
+        $project: {
+            state:1, 
+            zip:1,
+            population:"$pop",
+            _id:0
+        }
+    }
+    ```
+
+- `$set`
+    stage creates new fields or changes the value of existing fields, and then outputs the documents with the new fields.
+
+    ```javascript
+    {
+        $set: {
+            place: {
+                $concat:["$city",",","$state"]
+            },
+            pop:10000
+        }
+    }
+    ```
+
+- `$count`
+    stage creates a new document, with the number of documents at that stage in the aggregation pipeline assigned to the specified field name.
+
+    ```javascript
+    {
+        $count: "total_zips"
+    }
+    ```
+
+**Using the `$out` in a MongoDB Aggregation Pipeline**
+
+- `$out`
+    writes the documents that are returned by an aggregation pipeline into a collection. This should be the last stage. It will create a new collection if it does not already exist. If collection exists, $out replaces the existing collection with new data.
+
+```javascript
+$out: {
+    db: "<db>",
+    coll: "<newCollection>"
+}
+
+$out: {
+    coll: "<newCollection>"
+}
+```
+
+### Aggregation with Node.js
+
+**Using `$match`**
+
+Aggregation gives you a way to transform data from your collection by passing documents from one stage to another. These stages can consist of operators that transform or organize your data in a specific way. In this lesson, we used `$match` and `$group`.
+
+The `$match` stage filters documents by using a simple equality match, like `$match: { author: "Dave"}`, or aggregation expressions using comparison operators, like `$match: { likes: { $gt: 100 } }`. This operator accepts a query document and passes the resulting documents to the next stage. `$match` should be placed early in your pipeline to reduce the number of documents to process.
+
+**Using `$group`**
+
+The `$group` stage separates documents according to a group key and returns one document for every unique group key. The group key is usually a field in the document, but it can also be an expression that resolves to a field. The `$group` stage can be used with aggregation expressions to perform calculations on the grouped documents. An example of this is adding up the total number of movie tickets sold by using the `$sum` operator:
+
+```javascript
+$group: { _id: "$movie", totalTickets: { $sum: "$tickets" } }
+```
+
+The `"$movie"` is the group key, and the `totalTickets` field is the result of the `$sum` operator.
+
+In the following code, we assign our collection name to a variable for convenience. First, we declare some variables to hold the database connection and the collection we'll use:
+
+```javascript
+const client = new MongoClient(uri)
+const dbname = "bank";
+const collection_name = "accounts";
+const accountsCollection = client.db(dbname).collection(collection_name);
+```
+
+Next, we build an aggregation pipeline that uses `$match` and `$group` and that will find accounts with a balance of less than $1,000. Then we group the results by the `account_type`, and calculate the `total_balance` and `avg_balance` for each type.
+
+```javascript
+const pipeline = [
+  // Stage 1: match the accounts with a balance less than $1,000
+  { $match: { balance: { $lt: 1000 } } },
+  // Stage 2: Calculate average balance and total balance
+  {
+    $group: {
+      _id: "$account_type",
+      total_balance: { $sum: "$balance" },
+      avg_balance: { $avg: "$balance" },
+    },
+  },
+]
+```
+
+To run an aggregation pipeline, we append the aggregate method to the collection. The aggregate method takes an array of stages as an argument, which is stored in a variable. The aggregate method returns a cursor that we can iterate over to get the results.
+
+```javascript
+const main = async () => {
+  try {
+    await client.connect()
+    console.log(`Connected to the database 🌍. \nFull connection string: ${safeURI}`)
+    let result = await accountsCollection.aggregate(pipeline)
+    for await (const doc of result) {
+      console.log(doc)
+    }
+  } catch (err) {
+    console.error(`Error connecting to the database: ${err}`)
+  } finally {
+    await client.close()
+  }
+}
+
+main()
+```
